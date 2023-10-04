@@ -1,0 +1,75 @@
+{% extends "blog/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 25px 0 0 25px; /* Make the left side rounded */
+    outline: none; /* Remove the default focus glow */
+    width: 250px;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.search-input:hover, .search-input:focus {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Slight shadow on hover/focus */
+}
+
+.search-button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007BFF; /* Example color, you can change */
+    color: #FFF; /* White text */
+    border-radius: 0 25px 25px 0; /* Make the right side rounded */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.search-button:hover {
+    background-color: #0056b3; /* Darken the button color on hover */
+}
+
+</style>
+
+<form method="get" action="{% url 'search-view' %}" class="search-form">
+  <input type="text" name="query" placeholder="Search for blog categories" class="search-input">
+  <button type="submit" class="search-button">Search</button>
+</form>
+
+  
+
+  <div id="posts-container">
+    {% for post in posts %}
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" alt="">
+        <div class="media-body">
+          <div class="article-metadata">
+            <a class="mr-2" href="#">{{ post.author }}</a>
+            <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+          </div>
+          <h2><a class="article-title" href="{%url 'post_detail' post.id%}">{{ post.title }}</a></h2>
+          <p class="article-content">{{ post.teaser }}</p>
+          <a href="{%url 'post_detail' post.id%}" class="read-more">Read More</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <script src="{% static 'blog/scripts.js' %}"></script>
+
+{% endblock content %}
+
+
+
+

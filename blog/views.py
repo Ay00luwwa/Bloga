@@ -1,0 +1,156 @@
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.urls import reverse_lazy
+from .models import Post, Category, BlogImage
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+import time
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
+from django.db.models import Q
+from .forms import SearchForm
+from .forms import PostForm
+
+
+
+
+
+
+def intro(request):
+    return render(request, 'blog/intro.html')
+
+def home(request):
+    context = {
+        'posts':Post.objects.all()
+    }
+    return render(request,'blog/home.html', context)
+
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/home.html' #app/model_viewtype.html
+    context_object_name = 'posts'
+    ordering = ['-date_posted']
+    paginate_by = 6
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for post in queryset:
+            print(post.id)  
+        return queryset
+
+
+    
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+    success_url = reverse_lazy('blog-home')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+
+        # Check if new_category is filled
+        new_category = form.cleaned_data.get('new_category')
+        if new_category:
+            # Create the category if it doesn't exist
+            category, created = Category.objects.get_or_create(name=new_category)
+            form.instance.category = category
+
+        return super().form_valid(form)
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content', 'category']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    template_name = 'blog/post_confirm_delete.html'
+    success_url = reverse_lazy('blog-home')
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+    
+
+
+
+def search_view(request):
+    queryset = Post.objects.all()
+    query = request.GET.get('query', '')  # Default to an empty string if 'query' doesn't exist
+    template_name = 'blog/search_results.html'
+
+    if query:
+        category = Category.objects.filter(name__iexact=query).first()
+        if category:
+            queryset = Post.objects.filter(category=category)
+        else:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query)
+            )
+
+    context = {
+        'results': queryset,  # renaming 'queryset' to 'results' to match your template
+        'query': query
+    }
+
+    return render(request, template_name, context)
+
+
+
+
+
+def form_valid(self, form):
+    form.instance.author = self.request.user
+    return super().form_valid(form)
+
+    
+def about(request):
+    return render(request, 'blog/about.html', {"title" : "About"})
+
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    return render(request, 'blog/post_detail.html', {'post': post})
+
+def get_paginated_posts(request):
+    page = request.GET.get('page', 1)
+    posts = Post.objects.all().order_by('-date_posted')
+    paginator = Paginator(posts, 6)
+    
+    try:
+        current_page = paginator.page(page)
+    except EmptyPage:
+        return JsonResponse([], safe=False)  # Return empty list when no more data
+
+    serialized_data = [
+        {
+            'id': post.id,
+            'title': post.title,
+            'author': post.author.username if post.author else "Bloga🖊📝",
+            'content': post.content,
+            'date_posted': post.date_posted.strftime('%Y-%m-%d %H:%M:%S'),
+            'image': post.image.url if post.image else None,
+            'teaser': post.teaser(),
+        }
+        for post in current_page
+    ]
+
+    return JsonResponse(serialized_data, safe=False)
+
+
+
+
