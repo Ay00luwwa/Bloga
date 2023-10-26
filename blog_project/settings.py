@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,6 +79,17 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
 WSGI_APPLICATION = 'blog_project.wsgi.application'
+
+JAZZMIN_SETTINGS = {
+    "copyright": "AyoIji tech stack"
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
+    "dark_mode_theme": "darkly",
+}
+
+JAZZMIN_SETTINGS["show_ui_builder"] = True
 
 
 # Database
@@ -146,8 +158,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('MAIL')
-EMAIL_HOST_PASSWORD = os.environ.get('PASSWORD')
+EMAIL_HOST_USER = 'ijidakinroayooluwa@gmail.com'
+EMAIL_HOST_PASSWORD = 'qzmi ddxk dypa uywh'
+DEFAULT_FROM_EMAIL = 'Bloga<noreply@ay00luwa.vercel.app>'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

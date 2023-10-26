@@ -22,6 +22,8 @@ class Category(models.Model):
     ANIMALS = 'Animals'
     CARS  = 'Cars'
     FASHION = 'Fashion'
+    ANIME = 'Anime'
+    HISTORY = 'History'
     OTHERS = 'Others'
     
     CATEGORY_CHOICES = [
@@ -41,6 +43,8 @@ class Category(models.Model):
         (ANIMALS, 'Animals'),
         (CARS, 'Cars'),
         (FASHION, 'Fashion'),
+        (ANIME, 'Anime'),
+        (HISTORY, 'History'),
         (OTHERS, 'Others'),     
     ]
     name = models.CharField(max_length=100, unique=True, choices=CATEGORY_CHOICES)
@@ -56,7 +60,8 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='post_images/', default='default.jpg')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
-    # Removed the redundant image field and kept the one with a default value
+    likes = models.ManyToManyField(User, related_name='post_likes')
+    dislikes = models.ManyToManyField(User, related_name='post_dislikes')
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
@@ -65,8 +70,11 @@ class Post(models.Model):
         return self.title
 
     def teaser(self):
-        # Return the first 100 words (corrected the comment)
         return ' '.join(self.content.split()[:20]) + '...'
+    
+    def get_image_url(self):
+        return self.image.url if self.image else None
+
 
 class BlogImage(models.Model):
     post = models.ForeignKey(Post, related_name='images', on_delete=models.CASCADE)
@@ -76,6 +84,7 @@ class BlogImage(models.Model):
         return f"Image for {self.post.title}"
     
     
+    
 class SearchQuery(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     query = models.CharField(max_length=255)
@@ -83,3 +92,4 @@ class SearchQuery(models.Model):
 
     def __str__(self):
         return self.query
+

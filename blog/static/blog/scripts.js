@@ -28,12 +28,15 @@ $(document).ready(function() {
                             <img src="${post.image}" alt="${post.author}'s Profile Image" class="mr-3" style="width:64px;height:64px;border-radius:50%;">
                             <div class="media-body">
                                 <div class="article-metadata">
-                                    <a class="mr-2" href=" ">${post.author  }</a>
+                                    <a class="mr-2" href="${users_profile}">${post.author}</a>
                                     <small class="text-muted">${post.date_posted}</small>
                                 </div>
+                                <img src="${post.image_url}" alt="Image for ${post.title}" class="img-fluid mt-3 rounded" width="400" height="20">
                                 <h2><a class="article-title" href="/posts/${post.id}/">${post.title}</a></h2>
                                 <p class="article-content">${post.teaser}</p>
+                                <button class="teaser-button">
                                 <a href="/posts/${post.id}/" class="read-more">Read More</a>
+                                </button>
                             </div>
                           </article>
                         `);
@@ -50,3 +53,5 @@ $(document).ready(function() {
         }
     });
 });
+
+

@@ -3,18 +3,18 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 from .models import Post, Category, BlogImage
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-import time
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.db.models import Q
 from .forms import SearchForm
 from .forms import PostForm
-
-
-
+import time
+from PIL import Image
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -50,6 +50,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        post = form.save()
+        
+        images = self.request.FILES.getlist('images')
+        # `images` should match the input field name in your form
 
         # Check if new_category is filled
         new_category = form.cleaned_data.get('new_category')
@@ -57,12 +61,23 @@ class PostCreateView(LoginRequiredMixin, CreateView):
             # Create the category if it doesn't exist
             category, created = Category.objects.get_or_create(name=new_category)
             form.instance.category = category
+            post = form.save()
+            
+        for image_file in images:
+            blog_image = BlogImage.objects.create(post=post, image=image_file)
+            image = Image.open(blog_image.image)
+            
+            output_size = (500, 500)  # desired width and height
+            image.thumbnail(output_size)
+            
+            image.save(blog_image.image.path, quality=85)
 
         return super().form_valid(form)
+    
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'category']
+    fields = ['title', 'content', 'category', 'image']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -145,6 +160,8 @@ def get_paginated_posts(request):
             'date_posted': post.date_posted.strftime('%Y-%m-%d %H:%M:%S'),
             'image': post.image.url if post.image else None,
             'teaser': post.teaser(),
+            'image_url': post.get_image_url(),
+
         }
         for post in current_page
     ]
@@ -152,5 +169,13 @@ def get_paginated_posts(request):
     return JsonResponse(serialized_data, safe=False)
 
 
+    
+
+def users_profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    context = {
+        'profile_user': profile_user
+    }
+    return render(request, 'blog/profile.html', {'profile_user': profile_user})
 
 
