@@ -27,7 +27,15 @@ SECRET_KEY = 'django-insecure-!k)@2g!6vz(l%6twg4ppoc+-=o=4u&cmoxo=%io%p4zx-6prxk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['Ayooluwa904T.pythonanywhere.com', '127.0.0.1', 'localhost']
+=======
+if DEBUG:
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INTERNAL_IPS = ['127.0.0.1']
+
+ALLOWED_HOSTS = ['Ayooluwa904T.pythonanywhere.com']
+>>>>>>> fe8a7a474cdad530d5f8d0c16365c9d19aa8ebf2
 
 
 
@@ -55,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'blog_project.urls'
 
