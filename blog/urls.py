@@ -17,6 +17,7 @@ urlpatterns = [
     path('about/', views.about, name='blog-about'),
     path('posts/<int:post_id>/', views.post_detail, name='post_detail'),
     path('search/', views.search_view, name='search-view'),
+    path('get_paginated_posts/', PostListView.as_view(), name='get_paginated_posts'),
 ]
 
 

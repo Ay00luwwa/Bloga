@@ -32,13 +32,13 @@ class PostListView(ListView):
     template_name = 'blog/home.html' #app/model_viewtype.html
     context_object_name = 'posts'
     ordering = ['-date_posted']
-    paginate_by = 6
+    # paginate_by = 6
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        for post in queryset:
-            print(post.id)  
-        return queryset
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     for post in queryset:
+    #         print(post.id)  
+    #     return queryset
 
 
     
