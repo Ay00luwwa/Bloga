@@ -1,7 +1,8 @@
-{% extends "blog/base.html" %}
+{% extends "blog/base2.html" %}
 {% load widget_tweaks %}
 {% block content %}
-<div class="content-section">
+<div class="mx-auto">
+   <div class="content-section">
     <form action="" method="POST" class="form-horizontal">
         {% csrf_token %}
         <fieldset class="form-group">
@@ -46,5 +47,7 @@
     </div>
     <a href="{% url 'password_reset' %}">Forgot your password?</a>
 
+</div> 
 </div>
+
 {% endblock content %}
