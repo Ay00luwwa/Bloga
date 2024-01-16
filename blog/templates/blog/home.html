@@ -55,7 +55,7 @@
 
   .rounded {
     height: 300px;
-    width: 550px;
+    width: 100%;
   }
 </style>
 
@@ -84,17 +84,15 @@
         >
         <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
       </div>
-      <h2>
+      <h4>
         <a class="article-title" href="{%url 'post_detail' post.id%}"
           >{{ post.title }}</a
         >
-      </h2>
+      </h4>
       <img
         src="{{ post.image.url }}"
         alt="Image for {{ post.title }}"
-        class="img-fluid mt-3 rounded"
-        width="400"
-        height="20"
+        class="img-fluid rounded"
       />
       <p class="article-content">{{ post.teaser }}</p>
       <button class="teaser-button">
